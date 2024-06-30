@@ -6,6 +6,7 @@ import { Config } from './config';
 import {
   CONFIG_AUTO_FORMAT,
   CONFIG_AUTO_PASTE,
+  CONFIG_CUSTOM_EDITORS,
   CONFIG_PROMPT_FOR_FILENAME,
   CONFIG_PROMPT_FOR_REMOVAL,
   FILE_NAME_TEMPLATE,
@@ -60,10 +61,11 @@ export class ScratchpadsManager {
 
       fs.writeFileSync(fullPath, data);
 
-      const doc = await vscode.workspace.openTextDocument(fullPath);
-      window.showTextDocument(doc);
+      let viewId = this.getViewIdForExtension(filetype.ext);
+      vscode.commands.executeCommand('vscode.openWith', vscode.Uri.file(fullPath), viewId);
 
       if (isAutoPaste && isAutoFormat) {
+        const doc = await vscode.workspace.openTextDocument(fullPath);
         await this.autoFormatDoc(doc);
       }
     }
@@ -246,5 +248,17 @@ export class ScratchpadsManager {
     }
 
     window.showInformationMessage('Removed all scratchpads');
+  }
+
+  /**
+   * Gets the view id to open the given file extension with
+   */
+  private getViewIdForExtension(ext: string) {
+    const customEditors = Config.getExtensionConfiguration(CONFIG_CUSTOM_EDITORS) as {
+      fileExtension: string;
+      viewId: string;
+    }[];
+    const custom = customEditors.find((editor) => `.${editor.fileExtension}` === ext);
+    return custom?.viewId ?? 'default';
   }
 }

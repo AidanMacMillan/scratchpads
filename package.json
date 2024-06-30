@@ -57,6 +57,25 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically format the new scratchpad content (works only if auto paste is on)"
+        },
+        "scratchpads.customEditors": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "title": "Custom editor",
+            "properties": {
+              "fileExtension": {
+                "type": "string",
+                "description": "The file extension of the custom editor"
+              },
+              "viewId": {
+                "type": "string",
+                "description": "The view id of the custom editor"
+              }
+            }
+          },
+          "description": "A list of custom editors to open scratchpads with"
         }
       }
     },
